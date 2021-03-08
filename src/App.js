@@ -34,16 +34,53 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            input: 0,
+            input: '0',
+            output: '',
+            equalsClicked: false
         };
         this.handleClick = this.handleClick.bind(this);
     }
 
-    handleClick(e) {
-        this.setState(state => ({
-            input: state.input + e.target.value,
-        }))
-        console.log(e.target.value);
+    handleClick(e) {        
+        switch(e.target.value){
+            case 'AC':
+                this.setState({
+                    input: '0',
+                    output: '',
+                    equalsClicked: false
+                });
+                break;
+            case '=':
+                this.setState({
+                    output: eval(this.state.input.replace('x', '*')),
+                    equalsClicked: true
+                });
+                // console.log(eval(this.state.input));
+                break;
+            default:
+                if(this.state.input === '0'){
+                    this.setState({
+                        input: e.target.value,
+                        output: '',
+                        equalsClicked: false
+                    });
+                }
+                else if(this.state.equalsClicked && ['+', '-', 'x', '/'].includes(e.target.value)){
+                    console.log(this.state.output);
+                    this.setState(state => ({
+                        input: state.output + e.target.value,
+                        output: '',
+                        equalsClicked: false
+                    }));
+                }
+                else{
+                    this.setState(state => ({
+                        input: state.input + e.target.value,
+                        equalsClicked: false
+                    }));
+                }
+                break;
+        }
     }
 
     render() {
@@ -51,7 +88,7 @@ class App extends React.Component {
             <div id="wrapper">
                 <div id="display-wrapper">
                     <p id="display" value={this.state.input}>{this.state.input}</p>
-                    <p id="result"></p>
+                    <p id="result">{this.state.output}</p>
                 </div>
                 <div id="button-wrapper">
                     <div id="numerical-container" className="row no-gutters" >
