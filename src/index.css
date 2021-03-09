@@ -3,6 +3,10 @@
 #root {
     font-family: 'Chakra Petch', sans-serif;
     font-weight: 500;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0px;
 }
 
 #wrapper {
@@ -11,6 +15,7 @@
     height: max-content;
     padding: 1rem;
     margin: auto;
+    border-radius: 0.5rem;
 }
 
 #display-wrapper {
@@ -20,12 +25,12 @@
     margin-bottom: 0.5rem;
 }
 
-#display {
+#input {
     padding: 0 5px 0 5px;
     color: white;
 }
 
-#result {
+#display {
     padding: 0 5px 0 5px;
     color: white;
     text-align: right;
