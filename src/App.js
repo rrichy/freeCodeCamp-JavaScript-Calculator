@@ -35,8 +35,9 @@ class App extends React.Component {
         super(props);
         this.state = {
             input: '0',
-            output: '',
-            equalsClicked: false
+            numerical: '0',
+            equalsClicked: false,
+            error: false
         };
         this.handleClick = this.handleClick.bind(this);
     }
@@ -46,36 +47,63 @@ class App extends React.Component {
             case 'AC':
                 this.setState({
                     input: '0',
-                    output: '',
-                    equalsClicked: false
+                    numerical: '0',
+                    equalsClicked: false,
+                    error: false
                 });
                 break;
             case '=':
-                this.setState({
-                    output: eval(this.state.input.replace('x', '*')),
-                    equalsClicked: true
-                });
-                // console.log(eval(this.state.input));
-                break;
-            default:
-                if(this.state.input === '0'){
+                let result;
+                try{
+                    result = eval(this.state.input.replace('x', '*'));
+                }
+                catch{
+                    result = 'SYNTAX ERROR';
                     this.setState({
-                        input: e.target.value,
-                        output: '',
-                        equalsClicked: false
+                        input: 'PRESS [AC]',
+                        error: true
                     });
                 }
-                else if(this.state.equalsClicked && ['+', '-', 'x', '/'].includes(e.target.value)){
-                    console.log(this.state.output);
+
+                this.setState({
+                    numerical: result,
+                    equalsClicked: true
+                });
+                break;
+            case '-':
+                if(this.state.error === false){
                     this.setState(state => ({
-                        input: state.output + e.target.value,
-                        output: '',
+                        input: (state.equalsClicked ? state.numerical : state.input) + e.target.value,
+                        numerical: '0',
                         equalsClicked: false
                     }));
                 }
-                else{
+                break;
+            case '+':
+            case 'x':
+            case '/':
+                if(this.state.error === false){
                     this.setState(state => ({
-                        input: state.input + e.target.value,
+                        input: (state.equalsClicked ? state.numerical : (['+','-','x','/'].includes(state.input.substr(-2,1)) && ['+','-','x','/'].includes(state.input.substr(-1)) ? state.input.slice(0,-2) : ['+','-','x','/'].includes(state.input.substr(-1)) ? state.input.slice(0,-1) : state.input)) + e.target.value,
+                        numerical: '0',
+                        equalsClicked: false
+                    }));
+                }
+                break;
+            case '.':
+                if(!this.state.numerical.includes('.') && this.state.error === false){
+                    this.setState(state => ({
+                        input: (state.input === '0' ? '' : state.input) + e.target.value,
+                        numerical: (state.numerical === '0' ? '' : state.numerical) + e.target.value,
+                        equalsClicked: false
+                    }));
+                }
+                break;
+            default:
+                if(this.state.error === false){
+                    this.setState(state => ({
+                        input: (state.input === '0' ? '' : state.input) + e.target.value,
+                        numerical: (state.numerical === '0' ? '' : state.numerical) + e.target.value,
                         equalsClicked: false
                     }));
                 }
@@ -87,8 +115,8 @@ class App extends React.Component {
         return (
             <div id="wrapper">
                 <div id="display-wrapper">
-                    <p id="display" value={this.state.input}>{this.state.input}</p>
-                    <p id="result">{this.state.output}</p>
+                    <p id="input" value={this.state.input}>{this.state.input}</p>
+                    <p id="display">{this.state.numerical}</p>
                 </div>
                 <div id="button-wrapper">
                     <div id="numerical-container" className="row no-gutters" >
